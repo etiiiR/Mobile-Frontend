@@ -36,12 +36,13 @@ const acceleration = ref({ x: 0, y: 0, z: 0 });
 const accelerationIncludingGravity = ref({ x: 0, y: 0, z: 0 });
 const orientation = ref({ alpha: 0, beta: 0, gamma: 0 });
 const ButtonText = ref("Start Measure");
-
+const permission = ref(false);
 const checkpermission = async () => {
   console.log("clicked");
   console.log(acceleration.value);
   try {
     await DeviceMotionEvent.requestPermission();
+    permission.value = true;
   } catch (e) {
     // Handle error
     presentAlert(e.message);
@@ -60,6 +61,15 @@ const rotationHandler = await Motion.addListener("orientation", (event) => {
 
 const StopMeasure = async () => {
   if (ButtonText.value == "Start Measure") {
+    if (permission.value == true) {
+      await Motion.addListener("accel", (event) => {
+        acceleration.value = event.acceleration;
+        accelerationIncludingGravity.value = event.accelerationIncludingGravity;
+      });
+      await Motion.addListener("orientation", (event) => {
+        orientation.value = event;
+      });
+    }
     checkpermission();
     ButtonText.value = "Stop Measure";
   } else {
@@ -68,7 +78,7 @@ const StopMeasure = async () => {
   }
 };
 
-const presentAlert = async (m:string) => {
+const presentAlert = async (m: string) => {
   const alert = await alertController.create({
     header: "Alert",
     subHeader: "Error",
