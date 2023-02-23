@@ -44,7 +44,7 @@ const checkpermission = async () => {
     await DeviceMotionEvent.requestPermission();
   } catch (e) {
     // Handle error
-    presentAlert();
+    presentAlert(e.message);
     return;
   }
 };
@@ -68,11 +68,11 @@ const StopMeasure = async () => {
   }
 };
 
-const presentAlert = async () => {
+const presentAlert = async (m:string) => {
   const alert = await alertController.create({
     header: "Alert",
     subHeader: "Error",
-    message: "This is an alert!",
+    message: m,
     buttons: ["OK"],
   });
 
