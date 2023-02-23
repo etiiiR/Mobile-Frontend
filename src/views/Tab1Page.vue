@@ -15,7 +15,9 @@
       <ExploreContainer name="Tab 1 page" />
       <h1 @click="StopMeasure">Stop Measure</h1>
       <p>acceleration: {{ acceleration.x }}{{ acceleration.y }}{{ acceleration.z }}</p>
+      <p>accelerationIncludingGravity: {{ accelerationIncludingGravity.x }}{{ accelerationIncludingGravity.y }}{{ accelerationIncludingGravity.z }}</p>
       <p>orientation: {{ orientation.alpha }}{{ orientation.beta }}{{ orientation.gamma }}</p>
+
     </ion-content>
   </ion-page>
 </template>
@@ -27,6 +29,7 @@ import { Motion } from "@capacitor/motion";
 import { PluginListenerHandle } from "@capacitor/core";
 import ExploreContainer from "@/components/ExploreContainer.vue";
 const acceleration = ref({ x: 0, y: 0, z: 0 });
+const accelerationIncludingGravity = ref({ x: 0, y: 0, z: 0 });
 const orientation = ref({ alpha: 0, beta: 0, gamma: 0 });
 
 onMounted(async () => {
@@ -46,6 +49,7 @@ const checkpermission = async () => {
 // add the listener to Motion with the callback and the permission check of the sensor
 const accelHandler = await Motion.addListener("accel", (event) => {
   acceleration.value = event.acceleration;
+  accelerationIncludingGravity.value = event.accelerationIncludingGravity;
 });
 
 const rotationHandler = await Motion.addListener("orientation", (event) => {
