@@ -13,19 +13,25 @@
       </ion-header>
 
       <ExploreContainer name="Tab 1 page" />
-      <h1 @click="checkpermission">Click here</h1>
+      <h1 @click="StopMeasure">Stop Measure</h1>
       <p>acceleration: {{ acceleration.x }}{{ acceleration.y }}{{ acceleration.z }}</p>
+      <p>orientation: {{ orientation.alpha }}{{ orientation.beta }}{{ orientation.gamma }}</p>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
 import { Motion } from "@capacitor/motion";
 import { PluginListenerHandle } from "@capacitor/core";
 import ExploreContainer from "@/components/ExploreContainer.vue";
 const acceleration = ref({ x: 0, y: 0, z: 0 });
+const orientation = ref({ alpha: 0, beta: 0, gamma: 0 });
+
+onMounted(async () => {
+  checkpermission()
+})
 
 const checkpermission = async () => {
   console.log('clicked')
@@ -42,7 +48,13 @@ const accelHandler = await Motion.addListener("accel", (event) => {
   acceleration.value = event.acceleration;
 });
 
+const rotationHandler = await Motion.addListener("orientation", (event) => {
+  orientation.value = event;
+});
 
+const StopMeasure = async () => {
+  await Motion.removeAllListeners();
+};
 
 
 
