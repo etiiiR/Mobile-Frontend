@@ -11,13 +11,21 @@
           <ion-title size="large">Tab 2</ion-title>
         </ion-toolbar>
       </ion-header>
-
-      <ExploreContainer name="Tab 2 page" />
+      <note class="mb-2"> Device Motion: </note>
+      <pre lang="json">{{ text }}</pre>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import ExploreContainer from '@/components/ExploreContainer.vue';
+import { useDeviceMotion, usePermission } from "@vueuse/core";
+import { reactive, computed } from "vue";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
+import ExploreContainer from "@/components/ExploreContainer.vue";
+const accelerometer = usePermission("accelerometer");
+const magnetometer = usePermission("magnetometer");
+const gyroscope = usePermission("gyroscope");
+
+const motion = reactive(useDeviceMotion());
+const text = computed(() => JSON.stringify(motion, null, 2));
 </script>
