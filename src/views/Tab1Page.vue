@@ -12,7 +12,6 @@
         </ion-toolbar>
       </ion-header>
     
-      <ExploreContainer name="Tab 1 page" />
       <ion-button @click="StopMeasure">{{ ButtonText }}</ion-button>
       <p>acceleration: {{ acceleration.x }}{{ acceleration.y }}{{ acceleration.z }}</p>
       <p>accelerationIncludingGravity: {{ accelerationIncludingGravity.x }}{{ accelerationIncludingGravity.y }}{{ accelerationIncludingGravity.z }}</p>
