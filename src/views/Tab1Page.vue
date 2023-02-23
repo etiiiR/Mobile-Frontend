@@ -13,7 +13,7 @@
       </ion-header>
 
       <ExploreContainer name="Tab 1 page" />
-      <p>{{ motion.x }}{{ motion.y }}{{ motion.z }}</p>
+      <p>acceleration: {{ acceleration.x }}{{ acceleration.y }}{{ acceleration.z }}</p>
     </ion-content>
   </ion-page>
 </template>
@@ -25,11 +25,15 @@ import { Motion } from '@capacitor/motion';
 
 
 import ExploreContainer from '@/components/ExploreContainer.vue';
-const motion = ref({x: 0, y: 0, z: 0})
-
-Motion.addListener('accel', (accel) => {
-  console.log('accel', accel);
-  motion.value = accel
+const acceleration = ref({x: 0, y: 0, z: 0})
+// add the listener to Motion with the callback and the permission check of the sensor
+Motion.addListener('accel', (data) => {
+  acceleration.value = data.acceleration;
 });
+
+Motion.addListener('orientation', (data) => {
+  console.log(data);
+});
+
 
 </script>
