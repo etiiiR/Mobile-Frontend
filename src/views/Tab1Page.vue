@@ -13,7 +13,7 @@
       </ion-header>
     
       <ExploreContainer name="Tab 1 page" />
-      <ion-button @click="StopMeasure">Stop Measure</ion-button>
+      <ion-button @click="StopMeasure">{{ ButtonText }}</ion-button>
       <p>acceleration: {{ acceleration.x }}{{ acceleration.y }}{{ acceleration.z }}</p>
       <p>accelerationIncludingGravity: {{ accelerationIncludingGravity.x }}{{ accelerationIncludingGravity.y }}{{ accelerationIncludingGravity.z }}</p>
       <p>orientation: {{ orientation.alpha }}{{ orientation.beta }}{{ orientation.gamma }}</p>
@@ -32,7 +32,7 @@ import ExploreContainer from "@/components/ExploreContainer.vue";
 const acceleration = ref({ x: 0, y: 0, z: 0 });
 const accelerationIncludingGravity = ref({ x: 0, y: 0, z: 0 });
 const orientation = ref({ alpha: 0, beta: 0, gamma: 0 });
-
+const ButtonText = ref('Stop Measure')
 onMounted(async () => {
   checkpermission()
 })
@@ -59,6 +59,12 @@ const rotationHandler = await Motion.addListener("orientation", (event) => {
 
 const StopMeasure = async () => {
   await Motion.removeAllListeners();
+  if (ButtonText.value == 'Start Measure') {
+    checkpermission()
+    ButtonText.value = 'Stop Measure'
+  } else {
+    ButtonText.value = 'Start Measure'
+  }
 };
 
 
