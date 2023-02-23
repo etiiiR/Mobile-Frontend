@@ -1,0 +1,7 @@
+{
+  "name": "CDL1 Sensor Activities",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
