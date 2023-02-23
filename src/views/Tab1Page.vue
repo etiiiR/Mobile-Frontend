@@ -59,11 +59,11 @@ const rotationHandler = await Motion.addListener("orientation", (event) => {
 });
 
 const StopMeasure = async () => {
-  await Motion.removeAllListeners();
   if (ButtonText.value == "Start Measure") {
     checkpermission();
     ButtonText.value = "Stop Measure";
   } else {
+    await Motion.removeAllListeners();
     ButtonText.value = "Start Measure";
   }
 };
