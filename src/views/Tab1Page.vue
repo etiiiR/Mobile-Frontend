@@ -1,7 +1,7 @@
 <template>
   <ion-page>
-    <ion-header>
-      <ion-toolbar>
+    <ion-header :translucent="true">
+      <ion-toolbar >
         <ion-title>Tab 1</ion-title>
       </ion-toolbar>
     </ion-header>
