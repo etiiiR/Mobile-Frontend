@@ -11,9 +11,9 @@
           <ion-title size="large">Tab 1</ion-title>
         </ion-toolbar>
       </ion-header>
-
+    
       <ExploreContainer name="Tab 1 page" />
-      <h1 @click="StopMeasure">Stop Measure</h1>
+      <ion-button @click="StopMeasure">Stop Measure</ion-button>
       <p>acceleration: {{ acceleration.x }}{{ acceleration.y }}{{ acceleration.z }}</p>
       <p>accelerationIncludingGravity: {{ accelerationIncludingGravity.x }}{{ accelerationIncludingGravity.y }}{{ accelerationIncludingGravity.z }}</p>
       <p>orientation: {{ orientation.alpha }}{{ orientation.beta }}{{ orientation.gamma }}</p>
@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import { IonButton } from '@ionic/vue';
 import { ref, onMounted } from "vue";
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
 import { Motion } from "@capacitor/motion";
