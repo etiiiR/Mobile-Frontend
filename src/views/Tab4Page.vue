@@ -13,6 +13,8 @@
       </ion-header>
       <note class="mb-2"> Device Orientation: </note>
       <pre lang="json">{{ text }}</pre>
+      <ion-button @click="resume">resume</ion-button>
+      <ion-button @click="pause ">pause</ion-button>
     </ion-content>
   </ion-page>
 </template>
@@ -24,5 +26,6 @@ import { reactive, computed } from "vue";
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
 import ExploreContainer from '@/components/ExploreContainer.vue';
 const geolocation = reactive(useGeolocation());
+const { resume, pause } = useGeolocation()
 const text = computed(() => JSON.stringify(geolocation, null, 2));
 </script>
