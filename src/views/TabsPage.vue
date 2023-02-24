@@ -17,7 +17,7 @@
           <ion-icon aria-hidden="true" :icon="watch" />
           <ion-label>Orientation</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="tab4" href="/tabs/tab3">
+        <ion-tab-button tab="tab4" href="/tabs/tab4">
           <ion-icon aria-hidden="true" :icon="watch" />
           <ion-label>Geolocation</ion-label>
         </ion-tab-button>
