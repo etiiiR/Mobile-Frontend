@@ -11,7 +11,7 @@
           <ion-title size="large">Tab 2</ion-title>
         </ion-toolbar>
       </ion-header>
-      <note class="mb-2"> Store: </note>
+      <note class="mb-2"> Store:{{ text }} </note>
     </ion-content>
   </ion-page>
 </template>
