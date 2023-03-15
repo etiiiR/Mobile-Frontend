@@ -50,15 +50,16 @@ import { Motion } from "@capacitor/motion";
 import { useDeviceMotion, usePermission, useDeviceOrientation } from "@vueuse/core";
 import { reactive, computed, onMounted } from "vue";
 import { useGeolocation } from "@vueuse/core";
-import { Dialog } from '@capacitor/dialog';
+import { Storage } from '@ionic/storage';
 
 const ButtonText = ref("Start Measure");
 const permission = ref(false);
 
 const orientation = reactive(useDeviceOrientation());
 const textOrientation = computed(() => JSON.stringify(orientation, null, 2));
-
-
+const store = new Storage();
+await store.create();
+await store.set('key', 'value');
 const accelerometer = usePermission("accelerometer");
 const magnetometer = usePermission("magnetometer");
 const gyroscope = usePermission("gyroscope");
@@ -67,6 +68,8 @@ const motion = reactive(useDeviceMotion());
 const textMotion = computed(() => JSON.stringify(motion, null, 2));
 
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
+
+
 
 const importModel = async () => {
   const TensorflowModel = await fetch(
@@ -117,6 +120,7 @@ const presentAlert = async (m: string) => {
 onMounted(async () => {
   await checkpermission();
 });
+
 
 
 </script>
