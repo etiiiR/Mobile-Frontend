@@ -38,7 +38,7 @@
         )
       }}</pre>
       <note class="mb-2"> Storage: </note>
-      <pre lang="json">{{ store.get('key') }}</pre>
+      <pre>{{ store.get('key') }}</pre>
     </ion-content>
   </ion-page>
 </template>
