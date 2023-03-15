@@ -37,6 +37,8 @@
           2
         )
       }}</pre>
+      <note class="mb-2"> Storage: </note>
+      <pre lang="json">{{ store.get('key') }}</pre>
     </ion-content>
   </ion-page>
 </template>
@@ -59,16 +61,17 @@ const orientation = reactive(useDeviceOrientation());
 const textOrientation = computed(() => JSON.stringify(orientation, null, 2));
 const store = new Storage();
 await store.create();
-await store.set('key', 'value');
+
 const accelerometer = usePermission("accelerometer");
 const magnetometer = usePermission("magnetometer");
 const gyroscope = usePermission("gyroscope");
 
 const motion = reactive(useDeviceMotion());
+
 const textMotion = computed(() => JSON.stringify(motion, null, 2));
 
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
-
+await store.set('key', textMotion.value);
 
 
 const importModel = async () => {
@@ -120,6 +123,8 @@ const presentAlert = async (m: string) => {
 onMounted(async () => {
   await checkpermission();
 });
+
+
 
 
 
