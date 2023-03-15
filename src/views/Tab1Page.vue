@@ -112,7 +112,8 @@ const presentAlert = async (m: string) => {
   await alert.present();
 };
 
-onMounted(() => {
-  checkpermission();
+onMounted(async () => {
+  debugger
+  await checkpermission();
 });
 </script>
