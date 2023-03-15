@@ -21,6 +21,10 @@
           <ion-icon aria-hidden="true" :icon="watch" />
           <ion-label>Geolocation</ion-label>
         </ion-tab-button>
+        <ion-tab-button tab="tab5" href="/tabs/tab5">
+          <ion-icon aria-hidden="true" :icon="watch" />
+          <ion-label>Permissions</ion-label>
+        </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
   </ion-page>

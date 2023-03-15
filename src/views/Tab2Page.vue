@@ -21,7 +21,7 @@
 import { useDeviceMotion, usePermission } from "@vueuse/core";
 import { reactive, computed } from "vue";
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
-import ExploreContainer from "@/components/ExploreContainer.vue";
+
 const accelerometer = usePermission("accelerometer");
 const magnetometer = usePermission("magnetometer");
 const gyroscope = usePermission("gyroscope");

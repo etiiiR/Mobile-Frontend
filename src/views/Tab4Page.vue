@@ -11,21 +11,37 @@
           <ion-title size="large">Tab 4</ion-title>
         </ion-toolbar>
       </ion-header>
-      <note class="mb-2"> Device Orientation: </note>
-      <pre lang="json">{{ text }}</pre>
+      <note class="mb-2"> Device Geolocation: </note>
+      <pre lang="json">{{
+        JSON.stringify(
+          {
+            coords: {
+              accuracy: coords.accuracy,
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+              altitude: coords.altitude,
+              altitudeAccuracy: coords.altitudeAccuracy,
+              heading: coords.heading,
+              speed: coords.speed,
+            },
+            locatedAt,
+            error: error ? error.message : error,
+          },
+          null,
+          2
+        )
+      }}</pre>
       <ion-button @click="resume">resume</ion-button>
-      <ion-button @click="pause ">pause</ion-button>
+      <ion-button @click="pause">pause</ion-button>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { useGeolocation } from '@vueuse/core'
+import { useGeolocation } from "@vueuse/core";
 import { reactive, computed } from "vue";
 
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import ExploreContainer from '@/components/ExploreContainer.vue';
-const geolocation = reactive(useGeolocation());
-const { resume, pause } = useGeolocation()
-const text = computed(() => JSON.stringify(geolocation, null, 2));
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
+import ExploreContainer from "@/components/ExploreContainer.vue";
+const { coords, locatedAt, error, resume, pause } = useGeolocation();
 </script>
