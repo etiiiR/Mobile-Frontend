@@ -46,7 +46,7 @@ import { ref } from "vue";
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
 import { Motion } from "@capacitor/motion";
 import { useDeviceMotion, usePermission, useDeviceOrientation } from "@vueuse/core";
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted } from "vue";
 import { useGeolocation } from "@vueuse/core";
 
 const ButtonText = ref("Start Measure");
@@ -111,4 +111,8 @@ const presentAlert = async (m: string) => {
 
   await alert.present();
 };
+
+onMounted(() => {
+  checkpermission();
+});
 </script>
