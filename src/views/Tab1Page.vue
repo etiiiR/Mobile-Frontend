@@ -12,6 +12,7 @@
         </ion-toolbar>
       </ion-header>
       <ion-button @click="checkpermission" >Allow Motion Permission</ion-button>
+      <br>
       <note class="mb-2"> Device Motion: </note>
       <pre lang="json">{{ textMotion }}</pre>
       <note class="mb-2"> Device Orientation: </note>
