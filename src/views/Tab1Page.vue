@@ -27,11 +27,9 @@
 
 <script setup lang="ts">
 import { IonButton, alertController } from "@ionic/vue";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
 import { Motion } from "@capacitor/motion";
-import { PluginListenerHandle } from "@capacitor/core";
-import ExploreContainer from "@/components/ExploreContainer.vue";
 const acceleration = ref({ x: 0, y: 0, z: 0 });
 const accelerationIncludingGravity = ref({ x: 0, y: 0, z: 0 });
 const orientation = ref({ alpha: 0, beta: 0, gamma: 0 });
@@ -50,12 +48,12 @@ const checkpermission = async () => {
   }
 };
 // add the listener to Motion with the callback and the permission check of the sensor
-const accelHandler = await Motion.addListener("accel", (event) => {
+await Motion.addListener("accel", (event) => {
   acceleration.value = event.acceleration;
   accelerationIncludingGravity.value = event.accelerationIncludingGravity;
 });
 
-const rotationHandler = await Motion.addListener("orientation", (event) => {
+await Motion.addListener("orientation", (event) => {
   orientation.value = event;
 });
 
