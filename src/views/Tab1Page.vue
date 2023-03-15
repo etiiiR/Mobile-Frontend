@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import * as tf from '@tensorflow/tfjs';
 import { IonButton, alertController } from "@ionic/vue";
 import { ref } from "vue";
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
@@ -35,6 +36,38 @@ const accelerationIncludingGravity = ref({ x: 0, y: 0, z: 0 });
 const orientation = ref({ alpha: 0, beta: 0, gamma: 0 });
 const ButtonText = ref("Start Measure");
 const permission = ref(false);
+
+const importModel = async () => {
+  const TensorflowModel = await fetch(
+    "https://raw.githubusercontent.com/ahmedkhalil1998/Model/main/model.json"
+  ).then((res) => res.json());
+
+  const model = await tf.loadLayersModel(`data:${TensorflowModel}`);
+  return model
+};
+
+const predict = async (model: any, data: any) => {
+  const prediction = await model.predict(data);
+  return prediction;
+};
+
+const predictData = async () => {
+  const model = await importModel();
+  const data = tf.tensor([[
+    acceleration.value.x,
+    acceleration.value.y,
+    acceleration.value.z,
+    accelerationIncludingGravity.value.x,
+    accelerationIncludingGravity.value.y,
+    accelerationIncludingGravity.value.z,
+    orientation.value.alpha,
+    orientation.value.beta,
+    orientation.value.gamma,
+  ]]);
+  const prediction = await predict(model, data);
+  return prediction;
+};
+
 const checkpermission = async () => {
   console.log("clicked");
   console.log(acceleration.value);
