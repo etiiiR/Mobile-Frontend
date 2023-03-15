@@ -11,16 +11,30 @@
           <ion-title size="large">Tab 1</ion-title>
         </ion-toolbar>
       </ion-header>
-
-      <ion-button @click="StopMeasure">{{ ButtonText }}</ion-button>
-      <p>acceleration: {{ acceleration.x }}{{ acceleration.y }}{{ acceleration.z }}</p>
-      <p>
-        accelerationIncludingGravity: {{ accelerationIncludingGravity.x
-        }}{{ accelerationIncludingGravity.y }}{{ accelerationIncludingGravity.z }}
-      </p>
-      <p>
-        orientation: {{ orientation.alpha }}{{ orientation.beta }}{{ orientation.gamma }}
-      </p>
+      <note class="mb-2"> Device Motion: </note>
+      <pre lang="json">{{ textMotion }}</pre>
+      <note class="mb-2"> Device Orientation: </note>
+      <pre lang="json">{{ textOrientation }}</pre>
+      <note class="mb-2"> Device Geolocation: </note>
+      <pre lang="json">{{
+        JSON.stringify(
+          {
+            coords: {
+              accuracy: coords.accuracy,
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+              altitude: coords.altitude,
+              altitudeAccuracy: coords.altitudeAccuracy,
+              heading: coords.heading,
+              speed: coords.speed,
+            },
+            locatedAt,
+            error: error ? error.message : error,
+          },
+          null,
+          2
+        )
+      }}</pre>
     </ion-content>
   </ion-page>
 </template>
@@ -31,11 +45,25 @@ import { IonButton, alertController } from "@ionic/vue";
 import { ref } from "vue";
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
 import { Motion } from "@capacitor/motion";
-const acceleration = ref({ x: 0, y: 0, z: 0 });
-const accelerationIncludingGravity = ref({ x: 0, y: 0, z: 0 });
-const orientation = ref({ alpha: 0, beta: 0, gamma: 0 });
+import { useDeviceMotion, usePermission, useDeviceOrientation } from "@vueuse/core";
+import { reactive, computed } from "vue";
+import { useGeolocation } from "@vueuse/core";
+
 const ButtonText = ref("Start Measure");
 const permission = ref(false);
+
+const orientation = reactive(useDeviceOrientation());
+const textOrientation = computed(() => JSON.stringify(orientation, null, 2));
+
+
+const accelerometer = usePermission("accelerometer");
+const magnetometer = usePermission("magnetometer");
+const gyroscope = usePermission("gyroscope");
+
+const motion = reactive(useDeviceMotion());
+const textMotion = computed(() => JSON.stringify(motion, null, 2));
+
+const { coords, locatedAt, error, resume, pause } = useGeolocation();
 
 const importModel = async () => {
   const TensorflowModel = await fetch(
@@ -54,25 +82,16 @@ const predict = async (model: any, data: any) => {
 const predictData = async () => {
   const model = await importModel();
   const data = tf.tensor([[
-    acceleration.value.x,
-    acceleration.value.y,
-    acceleration.value.z,
-    accelerationIncludingGravity.value.x,
-    accelerationIncludingGravity.value.y,
-    accelerationIncludingGravity.value.z,
-    orientation.value.alpha,
-    orientation.value.beta,
-    orientation.value.gamma,
+    3434
   ]]);
   const prediction = await predict(model, data);
   return prediction;
 };
 
 const checkpermission = async () => {
-  console.log("clicked");
-  console.log(acceleration.value);
   try {
     await DeviceMotionEvent.requestPermission();
+    await DeviceOrientationEvent.requestPermission();
     permission.value = true;
   } catch (e) {
     // Handle error
@@ -80,34 +99,7 @@ const checkpermission = async () => {
     return;
   }
 };
-// add the listener to Motion with the callback and the permission check of the sensor
-await Motion.addListener("accel", (event) => {
-  acceleration.value = event.acceleration;
-  accelerationIncludingGravity.value = event.accelerationIncludingGravity;
-});
 
-await Motion.addListener("orientation", (event) => {
-  orientation.value = event;
-});
-
-const StopMeasure = async () => {
-  if (ButtonText.value == "Start Measure") {
-    if (permission.value == true) {
-      await Motion.addListener("accel", (event) => {
-        acceleration.value = event.acceleration;
-        accelerationIncludingGravity.value = event.accelerationIncludingGravity;
-      });
-      await Motion.addListener("orientation", (event) => {
-        orientation.value = event;
-      });
-    }
-    checkpermission();
-    ButtonText.value = "Stop Measure";
-  } else {
-    await Motion.removeAllListeners();
-    ButtonText.value = "Start Measure";
-  }
-};
 
 const presentAlert = async (m: string) => {
   const alert = await alertController.create({
