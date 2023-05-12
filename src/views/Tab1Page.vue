@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header :translucent="true">
-      <ion-toolbar >
+      <ion-toolbar>
         <ion-title>Tab 1</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -11,8 +11,8 @@
           <ion-title size="large">Tab 1</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-button @click="checkpermission" >Allow Motion Permission</ion-button>
-      <br>
+      <ion-button @click="checkpermission">Allow Motion Permission</ion-button>
+      <br />
       <note class="mb-2"> Device Motion: </note>
       <pre lang="json">{{ textMotion }}</pre>
       <note class="mb-2"> Device Orientation: </note>
@@ -38,21 +38,35 @@
         )
       }}</pre>
       <note class="mb-2"> Storage: </note>
-      <pre>{{ store.get('key') }}</pre>
+      <pre>{{ store.get("key") }}</pre>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import * as tf from '@tensorflow/tfjs';
+import * as tf from "@tensorflow/tfjs";
+
 import { IonButton, alertController } from "@ionic/vue";
 import { ref } from "vue";
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
+
+
+
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+} from "@ionic/vue";
 import { Motion } from "@capacitor/motion";
-import { useDeviceMotion, usePermission, useDeviceOrientation } from "@vueuse/core";
+import {
+  useDeviceMotion,
+  usePermission,
+  useDeviceOrientation,
+} from "@vueuse/core";
 import { reactive, computed, onMounted } from "vue";
 import { useGeolocation } from "@vueuse/core";
-import { Storage } from '@ionic/storage';
+import { Storage } from "@ionic/storage";
 
 const ButtonText = ref("Start Measure");
 const permission = ref(false);
@@ -65,22 +79,20 @@ await store.create();
 const accelerometer = usePermission("accelerometer");
 const magnetometer = usePermission("magnetometer");
 const gyroscope = usePermission("gyroscope");
-
 const motion = reactive(useDeviceMotion());
 
 const textMotion = computed(() => JSON.stringify(motion, null, 2));
 
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
-await store.set('key', textMotion.value);
-
+await store.set("key", textMotion.value);
+const modelLoaded = ref(false);
+const model = ref();
 
 const importModel = async () => {
-  const TensorflowModel = await fetch(
-    "https://raw.githubusercontent.com/ahmedkhalil1998/Model/main/model.json"
-  ).then((res) => res.json());
-
-  const model = await tf.loadLayersModel(`data:${TensorflowModel}`);
-  return model
+  const response = await fetch("model.json");
+  const model = await response.json();
+  modelLoaded.value = true;
+  return model;
 };
 
 const predict = async (model: any, data: any) => {
@@ -90,11 +102,35 @@ const predict = async (model: any, data: any) => {
 
 const predictData = async () => {
   const model = await importModel();
-  const data = tf.tensor([[
-    3434
-  ]]);
-  const prediction = await predict(model, data);
-  return prediction;
+  const window_size = 400;
+  const timestep = 100;
+  // create a tensor like time,Accelerometer_x,Accelerometer_y,Accelerometer_z,Gyroscope_x,Gyroscope_y,Gyroscope_z,Magnetometer_x,Magnetometer_y,Magnetometer_z,Orientation_qx,Orientation_qy,Orientation_qz
+  //const { alpha, beta, gamma } = useDeviceOrientation();
+  //const { acceleration, accelerationIncludingGravity, rotationRate } =
+   // useDeviceMotion();
+
+  // Get the current datetime in milliseconds
+  //const interval = Date.now() * 1000;
+  //const n_features = 13;
+  //const data = [
+  //  interval, // time
+  //  acceleration.value?.x, // Accelerometer_x
+  //  acceleration.value?.y, // Accelerometer_y
+  //  acceleration.value?.z, // Accelerometer_z
+  //  rotationRate.value?.alpha, // Gyroscope_x
+  //  rotationRate.value?.beta, // Gyroscope_y
+  //  rotationRate.value?.gamma, // Gyroscope_z
+  //  accelerationIncludingGravity.value?.x, // Magnetometer_x
+  //  accelerationIncludingGravity.value?.y, // Magnetometer_y
+  //  accelerationIncludingGravity.value?.z, // Magnetometer_z
+  //  alpha, // Orientation_qx
+  //  beta, // Orientation_qy
+  //  gamma, // Orientation_qz
+  //];
+  //const tensorData = tf.tensor(data, [1, window_size, n_features]);
+  //const prediction = await predict(model, tensorData);
+  //console.log(prediction);
+  
 };
 
 const checkpermission = async () => {
@@ -107,7 +143,6 @@ const checkpermission = async () => {
     return;
   }
 };
-
 
 const presentAlert = async (m: string) => {
   const alert = await alertController.create({
@@ -122,10 +157,7 @@ const presentAlert = async (m: string) => {
 
 onMounted(async () => {
   await checkpermission();
+  debugger;
+  predictData();
 });
-
-
-
-
-
 </script>
