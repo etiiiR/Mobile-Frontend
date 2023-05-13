@@ -113,8 +113,8 @@ watch(
 const createData = () => {
   const window_size = 400;
   const step_size = 100;
-  debugger
-  debugger
+  debugger;
+  debugger;
   // Assuming `measurments` is an array containing the collected measurements
   // if null set 0 in map
   //convert null to 0 in measruments.value
@@ -134,10 +134,8 @@ const createData = () => {
   //   value.rz || 0,
   // ]);
 
-
   const X = measurments.value.map((value) => [
-  value.time || 0,  
-  value.alpha || 0,
+    value.alpha || 0,
     value.beta || 0,
     value.gamma || 0,
     value.x || 0,
@@ -157,7 +155,7 @@ const createData = () => {
     const window = X.slice(i, i + window_size);
     X_windows.push(window);
   }
-  debugger
+  debugger;
   // Reshape X_windows to 3D format (samples, timesteps, features)
   const samples = X_windows.length;
   const timesteps = X_windows[0].length;
@@ -165,7 +163,7 @@ const createData = () => {
   const reshapedX_windows = tf
     .tensor(X_windows)
     .reshape([samples, timesteps, features]);
-    return reshapedX_windows;
+  return reshapedX_windows;
 };
 
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
@@ -174,7 +172,7 @@ const modelLoaded = ref(false);
 const model = ref();
 
 const importModel = async () => {
-   const model = await tf.loadLayersModel("model.json");
+  const model = await tf.loadLayersModel("model.json");
   modelLoaded.value = true;
   return model;
 };
@@ -186,12 +184,12 @@ const predict = async (model: any, data: any) => {
 
 const predictData = async () => {
   const model = await importModel();
-  debugger
+  debugger;
   const X_widow = createData();
-  
+
   const res = await model.predict(X_widow);
-  alert(res)
-  debugger
+  alert(res);
+  debugger;
   // create a tensor like time,Accelerometer_x,Accelerometer_y,Accelerometer_z,Gyroscope_x,Gyroscope_y,Gyroscope_z,Magnetometer_x,Magnetometer_y,Magnetometer_z,Orientation_qx,Orientation_qy,Orientation_qz
   //const { alpha, beta, gamma } = useDeviceOrientation();
   //const { acceleration, accelerationIncludingGravity, rotationRate } =
