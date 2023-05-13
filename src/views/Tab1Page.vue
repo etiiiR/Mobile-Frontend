@@ -12,6 +12,7 @@
         </ion-toolbar>
       </ion-header>
       <ion-button @click="checkpermission">Allow Motion Permission</ion-button>
+      <ion-button @click="predictData">Predict activity</ion-button>
       <br />
       <note class="mb-2"> Device Motion: </note>
       <pre lang="json">{{ textMotion }}</pre>
@@ -47,9 +48,7 @@
 import * as tf from "@tensorflow/tfjs";
 
 import { IonButton, alertController } from "@ionic/vue";
-import { ref } from "vue";
-
-
+import { ref, watch } from "vue";
 
 import {
   IonPage,
@@ -82,6 +81,92 @@ const gyroscope = usePermission("gyroscope");
 const motion = reactive(useDeviceMotion());
 
 const textMotion = computed(() => JSON.stringify(motion, null, 2));
+const measurments = ref([]);
+watch(
+  () => ({
+    alpha: orientation.alpha,
+    beta: orientation.beta,
+    gamma: orientation.gamma,
+    x: motion.acceleration?.x,
+    y: motion.acceleration?.y,
+    z: motion.acceleration?.z,
+    gx: motion.accelerationIncludingGravity?.x,
+    gy: motion.accelerationIncludingGravity?.y,
+    gz: motion.accelerationIncludingGravity?.z,
+    rx: motion.rotationRate?.alpha,
+    ry: motion.rotationRate?.beta,
+    rz: motion.rotationRate?.gamma,
+  }),
+  (value) => {
+    if (value.alpha == null) return;
+    if (value.beta == null) return;
+    if (value.gamma == null) return;
+    const epoch = new Date("1970-01-01");
+    const datetime = new Date();
+    const seconds = (datetime - epoch) / 1000;
+    const milliseconds = Math.floor(seconds * 1000);
+    value["time"] = milliseconds;
+    measurments.value.push(value);
+  }
+);
+
+const createData = () => {
+  const window_size = 400;
+  const step_size = 100;
+  debugger
+  debugger
+  // Assuming `measurments` is an array containing the collected measurements
+  // if null set 0 in map
+  //convert null to 0 in measruments.value
+  // const X = measurments.value.map((value) => [
+  //   value.time,
+  //   value.alpha || 0,
+  //   value.beta || 0,
+  //   value.gamma || 0,
+  //   value.x || 0,
+  //   value.y || 0,
+  //   value.z || 0,
+  //   value.gx || 0,
+  //   value.gy || 0,
+  //   value.gz || 0,
+  //   value.rx || 0,
+  //   value.ry || 0,
+  //   value.rz || 0,
+  // ]);
+
+
+  const X = measurments.value.map((value) => [
+  value.time || 0,  
+  value.alpha || 0,
+    value.beta || 0,
+    value.gamma || 0,
+    value.x || 0,
+    value.y || 0,
+    value.z || 0,
+    value.gx || 0,
+    value.gy || 0,
+    value.gz || 0,
+    value.rx || 0,
+    value.ry || 0,
+    value.rz || 0,
+  ]);
+
+  // Create a sliding window of X with the specified window and step sizes
+  const X_windows = [];
+  for (let i = 0; i <= X.length - window_size; i += step_size) {
+    const window = X.slice(i, i + window_size);
+    X_windows.push(window);
+  }
+  debugger
+  // Reshape X_windows to 3D format (samples, timesteps, features)
+  const samples = X_windows.length;
+  const timesteps = X_windows[0].length;
+  const features = X_windows[0][0].length;
+  const reshapedX_windows = tf
+    .tensor(X_windows)
+    .reshape([samples, timesteps, features]);
+    return reshapedX_windows;
+};
 
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
 await store.set("key", textMotion.value);
@@ -89,8 +174,7 @@ const modelLoaded = ref(false);
 const model = ref();
 
 const importModel = async () => {
-  const response = await fetch("model.json");
-  const model = await response.json();
+   const model = await tf.loadLayersModel("model.json");
   modelLoaded.value = true;
   return model;
 };
@@ -102,12 +186,16 @@ const predict = async (model: any, data: any) => {
 
 const predictData = async () => {
   const model = await importModel();
-  const window_size = 400;
-  const timestep = 100;
+  debugger
+  const X_widow = createData();
+  
+  const res = await model.predict(X_widow);
+  alert(res)
+  debugger
   // create a tensor like time,Accelerometer_x,Accelerometer_y,Accelerometer_z,Gyroscope_x,Gyroscope_y,Gyroscope_z,Magnetometer_x,Magnetometer_y,Magnetometer_z,Orientation_qx,Orientation_qy,Orientation_qz
   //const { alpha, beta, gamma } = useDeviceOrientation();
   //const { acceleration, accelerationIncludingGravity, rotationRate } =
-   // useDeviceMotion();
+  // useDeviceMotion();
 
   // Get the current datetime in milliseconds
   //const interval = Date.now() * 1000;
@@ -130,7 +218,6 @@ const predictData = async () => {
   //const tensorData = tf.tensor(data, [1, window_size, n_features]);
   //const prediction = await predict(model, tensorData);
   //console.log(prediction);
-  
 };
 
 const checkpermission = async () => {
@@ -158,6 +245,5 @@ const presentAlert = async (m: string) => {
 onMounted(async () => {
   await checkpermission();
   debugger;
-  predictData();
 });
 </script>
