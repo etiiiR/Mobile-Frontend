@@ -13,6 +13,7 @@
       </ion-header>
       <ion-button @click="checkpermission">Allow Motion Permission</ion-button>
       <ion-button @click="predictData">Predict activity</ion-button>
+      <ion-button @click="clearData">Clear your Acitvity</ion-button>
       <br />
       <note class="mb-2"> Device Motion: </note>
       <pre lang="json">{{ textMotion }}</pre>
@@ -57,7 +58,6 @@ import {
   IonTitle,
   IonContent,
 } from "@ionic/vue";
-import { Motion } from "@capacitor/motion";
 import {
   useDeviceMotion,
   usePermission,
@@ -67,8 +67,6 @@ import { reactive, computed, onMounted } from "vue";
 import { useGeolocation } from "@vueuse/core";
 import { Storage } from "@ionic/storage";
 
-const ButtonText = ref("Start Measure");
-const permission = ref(false);
 
 const orientation = reactive(useDeviceOrientation());
 const textOrientation = computed(() => JSON.stringify(orientation, null, 2));
@@ -166,10 +164,9 @@ const createData = () => {
   return reshapedX_windows;
 };
 
-const { coords, locatedAt, error, resume, pause } = useGeolocation();
+const { coords, locatedAt, error } = useGeolocation();
 await store.set("key", textMotion.value);
 const modelLoaded = ref(false);
-const model = ref();
 
 const importModel = async () => {
   const model = await tf.loadLayersModel("model.json");
@@ -177,9 +174,9 @@ const importModel = async () => {
   return model;
 };
 
-const predict = async (model: any, data: any) => {
-  const prediction = await model.predict(data);
-  return prediction;
+
+const clearData = () => {
+  measurments.value = [];
 };
 
 const predictData = async () => {
