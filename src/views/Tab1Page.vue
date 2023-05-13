@@ -186,7 +186,20 @@ const predictData = async () => {
 
   const res = await model.predict(X_widow);
   alert(res);
-  debugger;
+  // [laufen, rennen, sitzen, stehen, treppenlaufen, velofahren]
+  const labels = [
+    "laufen",
+    "rennen",
+    "sitzen",
+    "stehen",
+    "treppenlaufen",
+    "velofahren",
+  ];
+  const index = res.argMax(1).dataSync()[0];
+  const label = labels[index];
+  alert(label);
+  };
+
   // create a tensor like time,Accelerometer_x,Accelerometer_y,Accelerometer_z,Gyroscope_x,Gyroscope_y,Gyroscope_z,Magnetometer_x,Magnetometer_y,Magnetometer_z,Orientation_qx,Orientation_qy,Orientation_qz
   //const { alpha, beta, gamma } = useDeviceOrientation();
   //const { acceleration, accelerationIncludingGravity, rotationRate } =
@@ -213,7 +226,6 @@ const predictData = async () => {
   //const tensorData = tf.tensor(data, [1, window_size, n_features]);
   //const prediction = await predict(model, tensorData);
   //console.log(prediction);
-};
 
 const checkpermission = async () => {
   try {
