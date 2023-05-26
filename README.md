@@ -11,5 +11,5 @@ ionic serve █
 ```
  
 Model wird zurzeit noch Manuell importiert:
-public/[...] --> bin files
-public/model.json --> Model
+public/[...] --> bin files <br>
+public/model.json --> Model <br>
