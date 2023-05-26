@@ -202,6 +202,10 @@ const predictData = async () => {
 
   const label = labels[mostCountedValue];
   alert(label);
+  // alert the predictions and the label to the prediction
+  alert(
+    `Predictions: ${predictions}\n\nLabel: ${label}\n\nConfidence: ${maxCount}/${predictions.length}`
+  );
 };
 
 // create a tensor like time,Accelerometer_x,Accelerometer_y,Accelerometer_z,Gyroscope_x,Gyroscope_y,Gyroscope_z,Magnetometer_x,Magnetometer_y,Magnetometer_z,Orientation_qx,Orientation_qy,Orientation_qz
