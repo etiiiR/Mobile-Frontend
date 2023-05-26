@@ -58,10 +58,7 @@ import {
   IonTitle,
   IonContent,
 } from "@ionic/vue";
-import {
-  useDeviceMotion,
-  useDeviceOrientation,
-} from "@vueuse/core";
+import { useDeviceMotion, useDeviceOrientation } from "@vueuse/core";
 import { reactive, computed, onMounted } from "vue";
 import { useGeolocation } from "@vueuse/core";
 import { Storage } from "@ionic/storage";
@@ -109,7 +106,7 @@ watch(
 const createData = () => {
   const window_size = 400;
   const step_size = 100;
-  debugger
+  debugger;
   const X = measurments.value.map((value) => [
     value.x || 0,
     value.y || 0,
@@ -117,14 +114,14 @@ const createData = () => {
     value.rx || 0,
     value.ry || 0,
     value.rz || 0,
-    0 || 0,
-    0 || 0,
-    0 || 0,
+    value.gx || 0,
+    value.gy || 0,
+    value.gz || 0,
     value.alpha || 0,
     value.beta || 0,
     value.gamma || 0,
   ]);
-  alert(X)
+debugger
   // Create a sliding window of X with the specified window and step sizes
   const X_windows = [];
   for (let i = 0; i <= X.length - window_size; i += step_size) {
@@ -133,12 +130,16 @@ const createData = () => {
   }
   // Reshape X_windows to 3D format (samples, timesteps, features)
   const samples = X_windows.length;
-  const timesteps = X_windows[0].length;
-  const features = X_windows[0][0].length;
-  const reshapedX_windows = tf
-    .tensor(X_windows)
-    .reshape([samples, timesteps, features]);
-  return reshapedX_windows;
+  try {
+    const timesteps = X_windows[0].length;
+    const features = X_windows[0][0].length;
+    const reshapedX_windows = tf
+      .tensor(X_windows)
+      .reshape([samples, timesteps, features]);
+    return reshapedX_windows;
+  } catch (err) {
+    alert("Not enough data to make Windows to predict");
+  }
 };
 
 const { coords, locatedAt, error } = useGeolocation();
@@ -158,6 +159,8 @@ const clearData = () => {
 const predictData = async () => {
   const model = await importModel();
   const X_widow = createData();
+  debugger;
+  const values = await X_widow.array();
 
   const res = await model.predict(X_widow);
   alert(res);
@@ -174,29 +177,28 @@ const predictData = async () => {
   //const index = res.argMax(1).dataSync()[0];
   const predictions = res.argMax(1).dataSync();
 
-// Count the occurrences of each predicted value
-const counts = {};
-predictions.forEach((value) => {
-  if (counts[value]) {
-    counts[value]++;
-  } else {
-    counts[value] = 1;
-  }
-});
+  // Count the occurrences of each predicted value
+  const counts = {};
+  predictions.forEach((value) => {
+    if (counts[value]) {
+      counts[value]++;
+    } else {
+      counts[value] = 1;
+    }
+  });
 
-// Find the value with the maximum count
-let maxCount = 0;
-let mostCountedValue;
+  // Find the value with the maximum count
+  let maxCount = 0;
+  let mostCountedValue;
 
-Object.keys(counts).forEach((value) => {
-  if (counts[value] > maxCount) {
-    maxCount = counts[value];
-    mostCountedValue = parseInt(value); // Convert value to an integer
-  }
-});
+  Object.keys(counts).forEach((value) => {
+    if (counts[value] > maxCount) {
+      maxCount = counts[value];
+      mostCountedValue = parseInt(value); // Convert value to an integer
+    }
+  });
 
-console.log("Most counted value:", mostCountedValue);
-
+  console.log("Most counted value:", mostCountedValue);
 
   const label = labels[mostCountedValue];
   alert(label);
