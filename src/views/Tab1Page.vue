@@ -109,19 +109,20 @@ watch(
 const createData = () => {
   const window_size = 400;
   const step_size = 100;
+  debugger
   const X = measurments.value.map((value) => [
-    value.alpha || 0,
-    value.beta || 0,
-    value.gamma || 0,
     value.x || 0,
     value.y || 0,
     value.z || 0,
-    value.gx || 0,
-    value.gy || 0,
-    value.gz || 0,
     value.rx || 0,
     value.ry || 0,
     value.rz || 0,
+    0 || 0,
+    0 || 0,
+    0 || 0,
+    value.alpha || 0,
+    value.beta || 0,
+    value.gamma || 0,
   ]);
 
   // Create a sliding window of X with the specified window and step sizes
