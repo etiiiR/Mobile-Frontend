@@ -106,7 +106,6 @@ watch(
 const createData = () => {
   const window_size = 400;
   const step_size = 100;
-  debugger;
   // delete the first 500 measurments
   measurments.value.splice(0, 500);
   const X = measurments.value.map((value) => [
@@ -123,7 +122,6 @@ const createData = () => {
     value.beta || 0,
     value.gamma || 0,
   ]);
-debugger
   // Create a sliding window of X with the specified window and step sizes
   const X_windows = [];
   for (let i = 0; i <= X.length - window_size; i += step_size) {
@@ -161,9 +159,6 @@ const clearData = () => {
 const predictData = async () => {
   const model = await importModel();
   const X_widow = createData();
-  debugger;
-  const values = await X_widow.array();
-
   const res = await model.predict(X_widow);
   alert(res);
   // [laufen, rennen, sitzen, stehen, treppenlaufen, velofahren]
@@ -175,7 +170,6 @@ const predictData = async () => {
     "treppenlaufen",
     "velofahren",
   ];
-  debugger;
   //const index = res.argMax(1).dataSync()[0];
   const predictions = res.argMax(1).dataSync();
 
