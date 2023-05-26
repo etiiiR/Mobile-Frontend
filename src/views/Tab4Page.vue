@@ -39,9 +39,7 @@
 
 <script setup lang="ts">
 import { useGeolocation } from "@vueuse/core";
-import { reactive, computed } from "vue";
 
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from "@ionic/vue";
-import ExploreContainer from "@/components/ExploreContainer.vue";
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
 </script>

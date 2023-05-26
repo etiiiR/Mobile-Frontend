@@ -22,7 +22,6 @@ import { useDeviceOrientation } from '@vueuse/core'
 import { reactive, computed } from "vue";
 
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
-import ExploreContainer from '@/components/ExploreContainer.vue';
 const orientation = reactive(useDeviceOrientation());
 const text = computed(() => JSON.stringify(orientation, null, 2));
 </script>

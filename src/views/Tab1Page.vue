@@ -60,22 +60,20 @@ import {
 } from "@ionic/vue";
 import {
   useDeviceMotion,
-  usePermission,
   useDeviceOrientation,
 } from "@vueuse/core";
 import { reactive, computed, onMounted } from "vue";
 import { useGeolocation } from "@vueuse/core";
 import { Storage } from "@ionic/storage";
 
-
 const orientation = reactive(useDeviceOrientation());
 const textOrientation = computed(() => JSON.stringify(orientation, null, 2));
 const store = new Storage();
 await store.create();
 
-const accelerometer = usePermission("accelerometer");
-const magnetometer = usePermission("magnetometer");
-const gyroscope = usePermission("gyroscope");
+//const accelerometer = usePermission("accelerometer");
+//const magnetometer = usePermission("magnetometer");
+//const gyroscope = usePermission("gyroscope");
 const motion = reactive(useDeviceMotion());
 
 const textMotion = computed(() => JSON.stringify(motion, null, 2));
@@ -111,27 +109,6 @@ watch(
 const createData = () => {
   const window_size = 400;
   const step_size = 100;
-  debugger;
-  debugger;
-  // Assuming `measurments` is an array containing the collected measurements
-  // if null set 0 in map
-  //convert null to 0 in measruments.value
-  // const X = measurments.value.map((value) => [
-  //   value.time,
-  //   value.alpha || 0,
-  //   value.beta || 0,
-  //   value.gamma || 0,
-  //   value.x || 0,
-  //   value.y || 0,
-  //   value.z || 0,
-  //   value.gx || 0,
-  //   value.gy || 0,
-  //   value.gz || 0,
-  //   value.rx || 0,
-  //   value.ry || 0,
-  //   value.rz || 0,
-  // ]);
-
   const X = measurments.value.map((value) => [
     value.alpha || 0,
     value.beta || 0,
@@ -153,7 +130,6 @@ const createData = () => {
     const window = X.slice(i, i + window_size);
     X_windows.push(window);
   }
-  debugger;
   // Reshape X_windows to 3D format (samples, timesteps, features)
   const samples = X_windows.length;
   const timesteps = X_windows[0].length;
@@ -174,14 +150,12 @@ const importModel = async () => {
   return model;
 };
 
-
 const clearData = () => {
   measurments.value = [];
 };
 
 const predictData = async () => {
   const model = await importModel();
-  debugger;
   const X_widow = createData();
 
   const res = await model.predict(X_widow);
@@ -195,37 +169,64 @@ const predictData = async () => {
     "treppenlaufen",
     "velofahren",
   ];
-  const index = res.argMax(1).dataSync()[0];
-  const label = labels[index];
+  debugger;
+  //const index = res.argMax(1).dataSync()[0];
+  const predictions = res.argMax(1).dataSync();
+
+// Count the occurrences of each predicted value
+const counts = {};
+predictions.forEach((value) => {
+  if (counts[value]) {
+    counts[value]++;
+  } else {
+    counts[value] = 1;
+  }
+});
+
+// Find the value with the maximum count
+let maxCount = 0;
+let mostCountedValue;
+
+Object.keys(counts).forEach((value) => {
+  if (counts[value] > maxCount) {
+    maxCount = counts[value];
+    mostCountedValue = parseInt(value); // Convert value to an integer
+  }
+});
+
+console.log("Most counted value:", mostCountedValue);
+
+
+  const label = labels[mostCountedValue];
   alert(label);
-  };
+};
 
-  // create a tensor like time,Accelerometer_x,Accelerometer_y,Accelerometer_z,Gyroscope_x,Gyroscope_y,Gyroscope_z,Magnetometer_x,Magnetometer_y,Magnetometer_z,Orientation_qx,Orientation_qy,Orientation_qz
-  //const { alpha, beta, gamma } = useDeviceOrientation();
-  //const { acceleration, accelerationIncludingGravity, rotationRate } =
-  // useDeviceMotion();
+// create a tensor like time,Accelerometer_x,Accelerometer_y,Accelerometer_z,Gyroscope_x,Gyroscope_y,Gyroscope_z,Magnetometer_x,Magnetometer_y,Magnetometer_z,Orientation_qx,Orientation_qy,Orientation_qz
+//const { alpha, beta, gamma } = useDeviceOrientation();
+//const { acceleration, accelerationIncludingGravity, rotationRate } =
+// useDeviceMotion();
 
-  // Get the current datetime in milliseconds
-  //const interval = Date.now() * 1000;
-  //const n_features = 13;
-  //const data = [
-  //  interval, // time
-  //  acceleration.value?.x, // Accelerometer_x
-  //  acceleration.value?.y, // Accelerometer_y
-  //  acceleration.value?.z, // Accelerometer_z
-  //  rotationRate.value?.alpha, // Gyroscope_x
-  //  rotationRate.value?.beta, // Gyroscope_y
-  //  rotationRate.value?.gamma, // Gyroscope_z
-  //  accelerationIncludingGravity.value?.x, // Magnetometer_x
-  //  accelerationIncludingGravity.value?.y, // Magnetometer_y
-  //  accelerationIncludingGravity.value?.z, // Magnetometer_z
-  //  alpha, // Orientation_qx
-  //  beta, // Orientation_qy
-  //  gamma, // Orientation_qz
-  //];
-  //const tensorData = tf.tensor(data, [1, window_size, n_features]);
-  //const prediction = await predict(model, tensorData);
-  //console.log(prediction);
+// Get the current datetime in milliseconds
+//const interval = Date.now() * 1000;
+//const n_features = 13;
+//const data = [
+//  interval, // time
+//  acceleration.value?.x, // Accelerometer_x
+//  acceleration.value?.y, // Accelerometer_y
+//  acceleration.value?.z, // Accelerometer_z
+//  rotationRate.value?.alpha, // Gyroscope_x
+//  rotationRate.value?.beta, // Gyroscope_y
+//  rotationRate.value?.gamma, // Gyroscope_z
+//  accelerationIncludingGravity.value?.x, // Magnetometer_x
+//  accelerationIncludingGravity.value?.y, // Magnetometer_y
+//  accelerationIncludingGravity.value?.z, // Magnetometer_z
+//  alpha, // Orientation_qx
+//  beta, // Orientation_qy
+//  gamma, // Orientation_qz
+//];
+//const tensorData = tf.tensor(data, [1, window_size, n_features]);
+//const prediction = await predict(model, tensorData);
+//console.log(prediction);
 
 const checkpermission = async () => {
   try {
@@ -251,6 +252,5 @@ const presentAlert = async (m: string) => {
 
 onMounted(async () => {
   await checkpermission();
-  debugger;
 });
 </script>
