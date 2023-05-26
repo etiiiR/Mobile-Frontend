@@ -124,7 +124,7 @@ const createData = () => {
     value.beta || 0,
     value.gamma || 0,
   ]);
-
+  alert(X)
   // Create a sliding window of X with the specified window and step sizes
   const X_windows = [];
   for (let i = 0; i <= X.length - window_size; i += step_size) {
