@@ -105,7 +105,7 @@ watch(
 
 const createData = () => {
   const window_size = 400;
-  const step_size = 100;
+  const step_size = 10;
   // delete the first 500 measurments
   measurments.value.splice(0, 500);
   const X = measurments.value.map((value) => [
