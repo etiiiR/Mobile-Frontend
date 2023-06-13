@@ -25,3 +25,5 @@ public/model.json --> Model <br>
 
 Eigentlich kümmert uns nur die View: <br> 
 views/Tab1Page.vue --> darin wird Tensor aufgebaut, daten gelesen, predicted und ausgegeben.
+
+## Aktuell kann der Magentometer dank Safari Browser nicht verewendet werden.
