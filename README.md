@@ -7,9 +7,9 @@ npm install -g @ionic/cli
 ```
 
 ``` bash
-npm i ||
-pnpm i ||
-yarn add ||
+npm i
+pnpm i
+yarn add
 ```
 
 ``` bash
