@@ -17853,7 +17853,7 @@ const predictData = async () => {
  
 
   const date = new Date();
-  const options = { dateStyle: 'full', timeStyle: 'long' };
+  const options = { dateStyle: 'short', timeStyle: 'short' };
   const dateString = date.toLocaleString(undefined, options);
 
   activites.value.push({x:`${label} ${dateString}`, Icon:label})
