@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>Activity Classification</ion-title>
+        <ion-title>Activity Classifier</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
