@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>Tab 1</ion-title>
+        <ion-title>Activity Classification</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
@@ -14,7 +14,9 @@
       <ion-button @click="checkpermission">Allow Motion Permission</ion-button>
       <ion-button @click="predictData">Predict activity</ion-button>
       <ion-button @click="clearData">Clear your Acitvity</ion-button>
+       <ion-button @click="clearLog">Clear History</ion-button>
       <ion-button @click="predictTestData">TestData Pred Velo unseen</ion-button>
+      
       
       <br />
       <ion-toggle v-model="toggleCheck" @ionChange="buttonchanged" :checked="toggleCheck" label-placement="start"></ion-toggle>
@@ -56,7 +58,7 @@
 import * as tf from "@tensorflow/tfjs";
 
 import { IonIcon, IonNote, IonToggle, IonItem, IonLabel } from '@ionic/vue';
-import { informationCircle, walk, bicycle, barChart, body, bed  } from 'ionicons/icons';
+import { informationCircle, walk, bicycle, barChart, body, bed, carSport  } from 'ionicons/icons';
 
 import { IonButton, alertController } from "@ionic/vue";
 import { ref, watch } from "vue";
@@ -85,7 +87,7 @@ const getIcon = (item) => {
   const icons = {
 		Laufen: walk, 
 		Velofahren: bicycle,
-    Rennen: barChart,
+    Rennen: carSport,
     Treppenlaufen: barChart,
     Sitzen: bed,
     Stehen: body
@@ -110,6 +112,9 @@ const buttonchanged = () => {
     }
 }
 
+const clearLog = () => {
+  activites.value = [];
+}
 
 const textMotion = computed(() => JSON.stringify(motion, null, 2));
 const measurments = ref([]);
@@ -145,7 +150,6 @@ const createData = () => {
   const window_size = 400;
   const step_size = 10;
   // delete the first 500 measurments
-  measurments.value.splice(0, 500);
   const X = measurments.value.map((value) => [
     value.x || 0,
     value.y || 0,
@@ -17853,10 +17857,12 @@ const predictData = async () => {
   const dateString = date.toLocaleString(undefined, options);
 
   activites.value.push({x:`${label} ${dateString}`, Icon:label})
+  measurments.value = []
   // alert the predictions and the label to the prediction
   alert(
     `Predictions: ${predictions}\n\nLabel: ${label}\n\nConfidence: ${maxCount}/${predictions.length}`
   );
+
 };
 
 
