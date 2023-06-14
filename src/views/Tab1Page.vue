@@ -17,9 +17,10 @@
        <ion-button @click="clearLog">Clear History</ion-button>
       <ion-button @click="predictTestData">TestData Pred Velo unseen</ion-button>
       
-      
       <br />
-      <ion-toggle v-model="toggleCheck" @ionChange="buttonchanged" :checked="toggleCheck" label-placement="start"></ion-toggle>
+            <p>Predict every 30 seconds</p>
+
+      <ion-toggle v-model="toggleCheck" @ionChange="buttonchanged" :checked="toggleCheck" label-placement="start">Predict every 30 seconds</ion-toggle>
       <ion-item v-for="activity in activites" :key="activity" lines="full">
     <ion-icon :icon="getIcon(activity.Icon)" slot="start"></ion-icon>
     <ion-label>{{ activity.x }}</ion-label>
