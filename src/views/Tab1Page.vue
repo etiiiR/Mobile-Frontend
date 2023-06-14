@@ -15,12 +15,20 @@
       <ion-button @click="predictData">Predict activity</ion-button>
       <ion-button @click="clearData">Clear your Acitvity</ion-button>
       <ion-button @click="predictTestData">TestData Pred Velo unseen</ion-button>
+      
       <br />
-      <note class="mb-2"> Device Motion: </note>
+      <ion-toggle v-model="toggleCheck" @ionChange="buttonchanged" :checked="toggleCheck" label-placement="start"></ion-toggle>
+      <ion-item v-for="activity in activites" :key="activity" lines="full">
+    <ion-icon :icon="getIcon(activity.Icon)" slot="start"></ion-icon>
+    <ion-label>{{ activity.x }}</ion-label>
+    <ion-icon :icon="informationCircle" slot="end"></ion-icon>
+  </ion-item>
+  <br />
+      <ion-note class="mb-2 text-lg"> Device Motion: </ion-note>
       <pre lang="json">{{ textMotion }}</pre>
-      <note class="mb-2"> Device Orientation: </note>
+      <ion-note class="mb-2"> Device Orientation: </ion-note>
       <pre lang="json">{{ textOrientation }}</pre>
-      <note class="mb-2"> Device Geolocation: </note>
+      <ion-note class="mb-2"> Device Geolocation: </ion-note>
       <pre lang="json">{{
         JSON.stringify(
           {
@@ -40,14 +48,15 @@
           2
         )
       }}</pre>
-      <note class="mb-2"> Storage: </note>
-      <pre>{{ store.get("key") }}</pre>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
 import * as tf from "@tensorflow/tfjs";
+
+import { IonIcon, IonNote, IonToggle, IonItem, IonLabel } from '@ionic/vue';
+import { informationCircle, walk, bicycle, barChart, body, bed  } from 'ionicons/icons';
 
 import { IonButton, alertController } from "@ionic/vue";
 import { ref, watch } from "vue";
@@ -67,12 +76,40 @@ import { Storage } from "@ionic/storage";
 const orientation = reactive(useDeviceOrientation());
 const textOrientation = computed(() => JSON.stringify(orientation, null, 2));
 const store = new Storage();
+const activites = ref([]);
 await store.create();
 
+let intervalId = null;
+
+const getIcon = (item) => {
+  const icons = {
+		Laufen: walk, 
+		Velofahren: bicycle,
+    Rennen: barChart,
+    Treppenlaufen: barChart,
+    Sitzen: bed,
+    Stehen: body
+	};
+  if (item in icons) return icons[item];
+}
 //const accelerometer = usePermission("accelerometer");
 //const magnetometer = usePermission("magnetometer");
 //const gyroscope = usePermission("gyroscope");
 const motion = reactive(useDeviceMotion());
+const toggleCheck = ref(false);
+
+
+const buttonchanged = () => {  
+  console.log(toggleCheck.value)
+   if (toggleCheck.value) {
+      // call function every 30 seconds predictData()
+      intervalId = setInterval(predictData, 30000);
+    } else {
+      // stop calling function
+      clearInterval(intervalId);
+    }
+}
+
 
 const textMotion = computed(() => JSON.stringify(motion, null, 2));
 const measurments = ref([]);
@@ -17775,12 +17812,12 @@ const predictData = async () => {
   alert(res);
   // [laufen, rennen, sitzen, stehen, treppenlaufen, velofahren]
   const labels = [
-    "laufen",
-    "rennen",
-    "sitzen",
-    "stehen",
-    "treppenlaufen",
-    "velofahren",
+    "Laufen",
+    "Rennen",
+    "Sitzen",
+    "Stehen",
+    "Treppenlaufen",
+    "Velofahren",
   ];
   //const index = res.argMax(1).dataSync()[0];
   const predictions = res.argMax(1).dataSync();
@@ -17809,7 +17846,13 @@ const predictData = async () => {
   console.log("Most counted value:", mostCountedValue);
 
   const label = labels[mostCountedValue];
-  alert(label);
+ 
+
+  const date = new Date();
+  const options = { dateStyle: 'full', timeStyle: 'long' };
+  const dateString = date.toLocaleString(undefined, options);
+
+  activites.value.push({x:`${label} ${dateString}`, Icon:label})
   // alert the predictions and the label to the prediction
   alert(
     `Predictions: ${predictions}\n\nLabel: ${label}\n\nConfidence: ${maxCount}/${predictions.length}`
@@ -17824,12 +17867,12 @@ const predictTestData = async () => {
   alert(res);
   // [laufen, rennen, sitzen, stehen, treppenlaufen, velofahren]
   const labels = [
-    "laufen",
-    "rennen",
-    "sitzen",
-    "stehen",
-    "treppenlaufen",
-    "velofahren",
+    "Laufen",
+    "Rennen",
+    "Sitzen",
+    "Stehen",
+    "Treppenlaufen",
+    "Velofahren",
   ];
   //const index = res.argMax(1).dataSync()[0];
   const predictions = res.argMax(1).dataSync();
@@ -17858,39 +17901,18 @@ const predictTestData = async () => {
   console.log("Most counted value:", mostCountedValue);
 
   const label = labels[mostCountedValue];
-  alert(label);
+  const date = new Date();
+  const options = { dateStyle: 'full', timeStyle: 'long' };
+  const dateString = date.toLocaleString(undefined, options);
+
+  activites.value.push({x:`${label} ${dateString}`, Icon:label})
+
   // alert the predictions and the label to the prediction
   alert(
     `Predictions: ${predictions}\n\nLabel: ${label}\n\nConfidence: ${maxCount}/${predictions.length}`
   );
 };
 
-// create a tensor like time,Accelerometer_x,Accelerometer_y,Accelerometer_z,Gyroscope_x,Gyroscope_y,Gyroscope_z,Magnetometer_x,Magnetometer_y,Magnetometer_z,Orientation_qx,Orientation_qy,Orientation_qz
-//const { alpha, beta, gamma } = useDeviceOrientation();
-//const { acceleration, accelerationIncludingGravity, rotationRate } =
-// useDeviceMotion();
-
-// Get the current datetime in milliseconds
-//const interval = Date.now() * 1000;
-//const n_features = 13;
-//const data = [
-//  interval, // time
-//  acceleration.value?.x, // Accelerometer_x
-//  acceleration.value?.y, // Accelerometer_y
-//  acceleration.value?.z, // Accelerometer_z
-//  rotationRate.value?.alpha, // Gyroscope_x
-//  rotationRate.value?.beta, // Gyroscope_y
-//  rotationRate.value?.gamma, // Gyroscope_z
-//  accelerationIncludingGravity.value?.x, // Magnetometer_x
-//  accelerationIncludingGravity.value?.y, // Magnetometer_y
-//  accelerationIncludingGravity.value?.z, // Magnetometer_z
-//  alpha, // Orientation_qx
-//  beta, // Orientation_qy
-//  gamma, // Orientation_qz
-//];
-//const tensorData = tf.tensor(data, [1, window_size, n_features]);
-//const prediction = await predict(model, tensorData);
-//console.log(prediction);
 
 const checkpermission = async () => {
   try {
@@ -17915,6 +17937,8 @@ const presentAlert = async (m: string) => {
 };
 
 onMounted(async () => {
-  await checkpermission();
+  try {const res = await checkpermission();} catch (e) {
+    alert("Um Sensoren zu benutzen in Andoird Permission geben und Ios auf Allow Motion Permission clicken")
+  }
 });
 </script>
